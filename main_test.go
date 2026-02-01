@@ -103,3 +103,108 @@ func TestPower(t *testing.T) {
 		})
 	}
 }
+
+func TestMakeCounter(t *testing.T) {
+    tests := []struct {
+        name     string
+        start    int
+        calls    int
+        expected []int
+    }{
+        {
+            name:     "start at 0, three calls",
+            start:    0,
+            calls:    3,
+            expected: []int{1, 2, 3},
+        },
+        {
+            name:     "start at 10, two calls",
+            start:    10,
+            calls:    2,
+            expected: []int{11, 12},
+        },
+        {
+            name:     "start at -5, four calls",
+            start:    -5,
+            calls:    4,
+            expected: []int{-4, -3, -2, -1},
+        },
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            counter := MakeCounter(tt.start)
+            got := []int{}
+            for i := 0; i < tt.calls; i++ {
+                got = append(got, counter())
+            }
+
+            for i := range got {
+                if got[i] != tt.expected[i] {
+                    t.Errorf("counter() call %d = %d, want %d", i+1, got[i], tt.expected[i])
+                }
+            }
+        })
+    }
+}
+
+func TestMakeMultiplier(t *testing.T) {
+    tests := []struct {
+        name     string
+        factor   int
+        inputs   []int
+        expected []int
+    }{
+        {"double", 2, []int{1, 3, 5}, []int{2, 6, 10}},
+        {"triple", 3, []int{2, 4, 6}, []int{6, 12, 18}},
+        {"factor zero", 0, []int{1, 2, 3}, []int{0, 0, 0}},
+        {"negative factor", -1, []int{1, 2, 3}, []int{-1, -2, -3}},
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            multiplier := MakeMultiplier(tt.factor)
+            for i, input := range tt.inputs {
+                got := multiplier(input)
+                if got != tt.expected[i] {
+                    t.Errorf("multiplier(%d) = %d, want %d", input, got, tt.expected[i])
+                }
+            }
+        })
+    }
+}
+
+
+func TestMakeAccumulator(t *testing.T) {
+    tests := []struct {
+        name     string
+        initial  int
+        adds     []int
+        subs     []int
+        expected int
+    }{
+        {"basic operations", 100, []int{50, 25}, []int{30}, 145},
+        {"only subtract", 50, []int{}, []int{10, 5}, 35},
+        {"add and subtract zero", 10, []int{0}, []int{0}, 10},
+        {"negative adds and subs", 20, []int{-5, -10}, []int{-5}, 0}, //error
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            add, sub, get := MakeAccumulator(tt.initial)
+
+            for _, a := range tt.adds {
+                add(a)
+            }
+
+            for _, s := range tt.subs {
+                sub(s)
+            }
+
+            got := get()
+            if got != tt.expected {
+                t.Errorf("accumulator result = %d, want %d", got, tt.expected)
+            }
+        })
+    }
+}
