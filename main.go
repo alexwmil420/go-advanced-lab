@@ -75,3 +75,37 @@ func MakeAccumulator(initial int) (func(int), func(int), func() int) {
 
     return add, subtract, get
 }
+
+func Apply(nums []int, operation func(int) int) []int {
+    result := make([]int, len(nums))
+    for i, n := range nums {
+        result[i] = operation(n)
+    }
+    return result
+}
+
+func Filter(nums []int, predicate func(int) bool) []int {
+    result := []int{}
+    for _, n := range nums {         
+        if predicate(n) {           
+            result = append(result, n)
+        }
+    }
+    return result
+}
+
+func Reduce(nums []int, initial int, operation func(acc, current int) int) int {
+    acc := initial
+    for _, n := range nums {        
+        acc = operation(acc, n)     
+    }
+    return acc
+}
+
+func Compose(f func(int) int, g func(int) int) func(int) int {
+    return func(x int) int {
+        return f(g(x))
+    }
+}
+
+

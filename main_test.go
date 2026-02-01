@@ -208,3 +208,112 @@ func TestMakeAccumulator(t *testing.T) {
         })
     }
 }
+
+func TestApply(t *testing.T) {
+    tests := []struct {
+        name     string
+        nums     []int
+        operation func(int) int
+        expected []int
+    }{
+        {"square numbers", []int{1, 2, 3, 4}, func(x int) int { return x * x }, []int{1, 4, 9, 16}},
+        {"double numbers", []int{1, 2, 3}, func(x int) int { return x * 2 }, []int{2, 4, 6}},
+        {"negate numbers", []int{-1, 2, -3}, func(x int) int { return -x }, []int{1, -2, 3}},
+        {"empty slice", []int{}, func(x int) int { return x * x }, []int{}},
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            got := Apply(tt.nums, tt.operation)
+            for i := range got {
+                if got[i] != tt.expected[i] {
+                    t.Errorf("Apply(%v) = %v, want %v", tt.nums, got, tt.expected)
+                    return
+                }
+            }
+            if len(got) != len(tt.expected) {
+                t.Errorf("Apply(%v) length = %d, want %d", tt.nums, len(got), len(tt.expected))
+            }
+        })
+    }
+}
+
+func TestFilter(t *testing.T) {
+    tests := []struct {
+        name     string
+        nums     []int
+        predicate func(int) bool
+        expected []int
+    }{
+        {"even numbers", []int{1, 2, 3, 4, 5}, func(x int) bool { return x%2 == 0 }, []int{2, 4}},
+        {"positive numbers", []int{-2, -1, 0, 1, 2}, func(x int) bool { return x > 0 }, []int{1, 2}},
+        {"greater than 3", []int{1, 3, 5, 7}, func(x int) bool { return x > 3 }, []int{5, 7}},
+        {"empty slice", []int{}, func(x int) bool { return x > 0 }, []int{}},
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            got := Filter(tt.nums, tt.predicate)
+            if len(got) != len(tt.expected) {
+                t.Errorf("Filter(%v) length = %d, want %d", tt.nums, len(got), len(tt.expected))
+            }
+            for i := range got {
+                if got[i] != tt.expected[i] {
+                    t.Errorf("Filter(%v) = %v, want %v", tt.nums, got, tt.expected)
+                }
+            }
+        })
+    }
+}
+
+func TestReduce(t *testing.T) {
+    tests := []struct {
+        name      string
+        nums      []int
+        initial   int
+        operation func(int, int) int
+        expected  int
+    }{
+        {"sum", []int{1, 2, 3, 4}, 0, func(acc, cur int) int { return acc + cur }, 10},
+        {"product", []int{1, 2, 3, 4}, 1, func(acc, cur int) int { return acc * cur }, 24},
+        {"max", []int{1, 5, 3, 4}, 0, func(acc, cur int) int { if cur > acc { return cur }; return acc }, 5},
+        {"min", []int{7, 2, 9, 4}, 100, func(acc, cur int) int { if cur < acc { return cur }; return acc }, 2},
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            got := Reduce(tt.nums, tt.initial, tt.operation)
+            if got != tt.expected {
+                t.Errorf("Reduce(%v) = %d, want %d", tt.nums, got, tt.expected)
+            }
+        })
+    }
+}
+
+func TestCompose(t *testing.T) {
+    double := func(x int) int { return x * 2 }
+    addTen := func(x int) int { return x + 10 }
+
+    tests := []struct {
+        name     string
+        f        func(int) int
+        g        func(int) int
+        input    int
+        expected int
+    }{
+        {"double then add 10", addTen, double, 5, 20}, // (5*2)+10
+        {"add 10 then double", double, addTen, 5, 30}, // (5+10)*2
+        {"double then double", double, double, 3, 12}, // (3*2)*2
+        {"add10 then add10", addTen, addTen, 4, 24},   // (4+10)+10
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            composed := Compose(tt.f, tt.g)
+            got := composed(tt.input)
+            if got != tt.expected {
+                t.Errorf("Compose result = %d, want %d", got, tt.expected)
+            }
+        })
+    }
+}
