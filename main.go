@@ -143,14 +143,14 @@ func ExploreProcess() {
 
 	/*Slice Memory:
 
-	  &data refers to the address of the slice header and stores a pointer to teh underlying array,
+	  &data refers to the address of the slice header and stores a pointer to the underlying array,
 	  the slice length, and its capacity.
 
 	  &data[0] refers to the address of the first element in the underlying
 	  array that holds the actual integers.
 
 	  They are different because the slice header only contains metadata about the slice,
-	  where as &data[0] points to the actual data stored in memory.
+	  whereas &data[0] points to the actual data stored in memory.
 
 	*/
 	fmt.Printf("Memory Address of the slice header: %p\n", &data)
@@ -360,12 +360,14 @@ func main() {
 	// 5. Pointer Demo
 	fmt.Println("\n========== Pointer Demo ==========")
 
-	a, b := 3, 7
+	// reuse a, b from earlier
+	a, b = 3, 7
 	fmt.Println("Before SwapValues:", a, b)
-	SwapValues(a, b)
+	a, b = SwapValues(a, b)
 	fmt.Println("After SwapValues:", a, b, "(unchanged)")
 
-	c, d := 3, 7
+	// reuse c, d from earlier
+	c, d = 3, 7
 	fmt.Println("Before SwapPointers:", c, d)
 	SwapPointers(&c, &d)
 	fmt.Println("After SwapPointers:", c, d, "(values swapped)")
