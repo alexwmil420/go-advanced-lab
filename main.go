@@ -240,7 +240,7 @@ func AnalyzeEscape() {
 
 func main() {
 
-	//Part 5
+	//Part 5 Pointer Playground and Escape Analysis
 	// Demo DoubleValue vs DoublePointer
 	num1 := 10
 	num2 := 10
@@ -267,10 +267,12 @@ func main() {
 	// Escape analysis demo
 	AnalyzeEscape()
 
+//==============================================================
 	//Part 4
 	// Process exploration
 	ExploreProcess()
 
+//==============================================================
 	//PART 6
 	// 1. Process Information
 	fmt.Println("========== Process Information ==========")
