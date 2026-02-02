@@ -2,6 +2,8 @@ package main
 
 import (
 	"errors"
+	"fmt"
+	"os"
 )
 
 func Factorial(n int) (int, error) {
@@ -108,4 +110,24 @@ func Compose(f func(int) int, g func(int) int) func(int) int {
     }
 }
 
+func ExploreProcess() {
+	pid := os.Getpid()
+	ppid := os.Getppid()
+
+	
+	fmt.Printf("Current Process ID: %d\n", pid)
+	fmt.Printf("Parent Process ID: %d\n", ppid)
+
+	data := []int{1, 2, 3, 4, 5}
+
+	fmt.Printf("Memory Address of the slice header: %p\n", &data)
+	fmt.Printf("Memory Address of the first element: %p\n", &data[0])
+
+	fmt.Println("Note: Other processes cannot access these memory addresses due to process isolation.")
+	fmt.Println()
+}
+
+func main() {
+	ExploreProcess()
+}
 
